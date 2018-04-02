@@ -108,16 +108,20 @@ if 'TRAVIS' in os.environ:
 if not DEBUG:
 
     import raven
+    source_path = None
+    try:
+        source_path = os.getenv('SOURCE_VERSION', raven.fetch_git_sha(BASE_DIR))
+    except raven.exceptions.InvalidGitRepository:
+        print('There isn\'t git access')
+        
+    else:
 
-    RAVEN_CONFIG = {
-        'dsn': 'https://790ceadf533f477a93705847e40eaa6d:9b2c756e27ac43b6b7341d5cefbb07bd@sentry.io/328879',
-        # If you are using git, you can also automatically configure the
-        # release based on the git info.
-        'release': os.getenv(
-                        'SOURCE_VERSION',
-                        raven.fetch_git_sha(os.path.dirname(__file__))
-                    )
-    }
+        RAVEN_CONFIG = {
+            'dsn': 'https://790ceadf533f477a93705847e40eaa6d:9b2c756e27ac43b6b7341d5cefbb07bd@sentry.io/328879',
+            # If you are using git, you can also automatically configure the
+            # release based on the git info.
+            'release': source_path
+        }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
