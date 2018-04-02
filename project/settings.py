@@ -105,7 +105,9 @@ if 'TRAVIS' in os.environ:
         }
     }
 
-if not DEBUG:
+RAVEN_DNS = os.getenv('RAVEN_DNS', None)
+
+if not DEBUG and RAVEN_DNS:
 
     import raven
     source_path = None
@@ -113,11 +115,11 @@ if not DEBUG:
         source_path = os.getenv('SOURCE_VERSION', raven.fetch_git_sha(BASE_DIR))
     except raven.exceptions.InvalidGitRepository:
         print('There isn\'t git access')
-        
+
     else:
 
         RAVEN_CONFIG = {
-            'dsn': 'https://790ceadf533f477a93705847e40eaa6d:9b2c756e27ac43b6b7341d5cefbb07bd@sentry.io/328879',
+            'dsn': RAVEN_DNS,
             # If you are using git, you can also automatically configure the
             # release based on the git info.
             'release': source_path
